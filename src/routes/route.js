@@ -21,7 +21,7 @@ router.put("/status/:userId",blogController.status)
 
 router.delete("/blogs/:blogId",blogController.deleteblog)
 
-// router.delete("/lastDelete",blogController.lastDelete)
+router.delete("/blog",blogController.deleteByElement)
 
 
 

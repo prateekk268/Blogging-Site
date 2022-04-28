@@ -21,7 +21,7 @@ const blogSchema = new mongoose.Schema({
 
     "body": {
         type: String,
-        required: true,
+        required: [true, "body is required"],
         trim : true
     },
 
@@ -29,7 +29,7 @@ const blogSchema = new mongoose.Schema({
     "authorId": {
         type: ObjectId,
         ref: "author",
-        required : true
+        required : [true, "authorId is required"]
     },
 
 
