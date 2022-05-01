@@ -4,32 +4,24 @@ const router = express.Router();
 
 const authorController= require("../controllers/authorController")
 const blogController= require("../controllers/blogsController")
+const loginController = require("../controllers/loginController")
+const authMiddleware =require("../middleware/authMiddleware")
 
 
 
-router.post("/author",authorController.createAuthor)
+router.post("/authors",authorController.createAuthor)
 
-router.post("/blogs",blogController.createBlogger)
+router.post("/blogs",authMiddleware.authentication,authMiddleware.authorization,blogController.createBlogger)
+ 
+router.get("/getBlogs",authMiddleware.authentication,blogController.getBlogs)  
+    
+router.put("/blogss/:blogId",authMiddleware.authentication,authMiddleware.authorization,blogController.Bloggs)
 
-router.get("/getBlogsData",blogController.getBlogsData)
+router.delete("/blogs/:blogId",authMiddleware.authentication,authMiddleware.authorization,blogController.deleteblog)
 
-router.get("/getblog",blogController.getblog)
+router.delete("/deleteByElement",authMiddleware.authentication,authMiddleware.authorization,blogController.deleteByElement)
 
-router.put("/updateData/:blogId",blogController.upData)
-
-router.put("/status/:userId",blogController.status)
-
-router.delete("/blogs/:blogId",blogController.deleteblog)
-
-router.delete("/blog",blogController.deleteByElement)
-
-
-
-
-
-
-
-
+router.post("/login",loginController.loginUser)
 
 
 
