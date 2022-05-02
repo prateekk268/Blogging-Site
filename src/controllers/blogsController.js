@@ -14,7 +14,7 @@ const createBlogger = async function (req, res) {
       if (!checkId)
         return res.status(400).send({ status: false, msg: "provide valid author id" });
       const blogData = req.body;
-      if (blogData.isPublished === false || blogData.delete) {
+      if (blogData.isPublished === false ) {
   
         const blogCreation = await blogModel.create(blogData);
         return res.status(201).send({ status: true, data: blogCreation });
@@ -38,11 +38,15 @@ const createBlogger = async function (req, res) {
 const getBlogs = async function (req, res) {
     try {
         let data = req.query;
-        let blogsPresent = await blogModel.find({deleted : false, isPublished : true, ...data}).count()
-        res.status(200).send({status : true, msg : blogsPresent})
+        let blogsPresent = await blogModel.find({ deleted: false, isPublished: true, ...data })// doubts in spread operator
+        if(!blogsPresent) return res.status(404).send({msg : "No such Data"})
+        if(blogsPresent.length == 0){
+            return res.status(404).send({msg : "No blogs are present"})
+        }
+        res.status(200).send({ status: true, msg: blogsPresent })
     }
     catch (err) {
-        res.status(500).send({status : false, msg: err.message})
+        res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -112,18 +116,17 @@ const deleteblog = async function (req, res) {
 const deleteByElement = async function (req, res) {
     try {
         let data = req.query
-        if (!data) return res.status(404).send({ msg: " data is required in query params" })
-        if (Object.keys(data) == 0) return res.status(400).send({ status: false, msg: "not a vaild input" })
-
-        let check = await blogModel.find(data)
-        if (!check) return res.status(404).send('Blog not exist')
-        console.log(check)
-
-        const deleteBYquery = await blogModel.updateMany({ $and: [data, { deleted: false }, { isPublished: false }] }, { $set: { deleted: true, deletedAt: new Date() } })
-        if (deleteBYquery.modifiedCount == 0) return res.status(400).send('user already deleted')
-
-        if (!deleteBYquery) return res.status(404).send({ status: false, msg: "blog not exist" })
-        res.status(200).send({ status: true, msg: deleteBYquery })
+        let filter = {...data}
+        if(!data) return res.status(404).send({msg : "data is required in query params"})
+        let check = await blogModel.findOne(filter)
+        if(!check) return res.status(404).send({status : false , msg : "blog is already deleted"})
+        if(check.deleted == true) return res.status(404).send({status : false, msg : "blog is already deleted"})
+        if (check.deleted == false){
+            let idList = check._id
+            console.log(idList)
+            let deletion = await blogModel.findOneAndUpdate(filter, {set : {deleted : true, deletedAt : new Date()}},{new : true , upsert : true})
+            return res.status(200).send({ status : true , msg : "blog is deleted successfully"})
+        }
     }
     catch (err) {
         console.log(err)
