@@ -55,7 +55,7 @@ const blogSchema = new mongoose.Schema({
     },
 
 
-    "deleted": {
+    "isDeleted": {
         type: Boolean,
         default: false
     },

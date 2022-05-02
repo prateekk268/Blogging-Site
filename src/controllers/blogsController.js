@@ -38,7 +38,7 @@ const createBlogger = async function (req, res) {
 const getBlogs = async function (req, res) {
     try {
         let data = req.query;
-        let blogsPresent = await blogModel.find({ deleted: false, isPublished: true, ...data })// doubts in spread operator
+        let blogsPresent = await blogModel.find({ isDeleted: false, isPublished: true, ...data })// doubts in spread operator
         if(!blogsPresent) return res.status(404).send({msg : "No such Data"})
         if(blogsPresent.length == 0){
             return res.status(404).send({msg : "No blogs are present"})
@@ -62,8 +62,8 @@ const Bloggs = async function(req, res) {
         if (!blogId) return res.status(400).send({ status: false, msg: "blogid is required" })
         let findblog = await blogModel.findById(blogId)
         if (!findblog) return res.status(404).send({ msg: "blogid invalid" })
-        if (findblog.deleted == true) return res.status(404).send({ msg: "Blog is already deleted " })
-        if (findblog.deleted == false) {
+        if (findblog.isDeleted == true) return res.status(404).send({ msg: "Blog is already deleted " })
+        if (findblog.isDeleted == false) {
             let updatedBlog = await blogModel.findOneAndUpdate({ _id: blogId},{ 
                 $set: {
                     title: data.title,
@@ -99,7 +99,7 @@ const deleteblog = async function (req, res) {
 
         let checking = check.deleted
         if (checking == false) {
-            let deleteBlog = await blogModel.findOneAndUpdate({ _id: Blogid }, { deleted: true, deletedAt: new Date() }, { new: true })
+            let deleteBlog = await blogModel.findOneAndUpdate({ _id: Blogid }, { isDeleted: true, deletedAt: new Date() }, { new: true })
             return res.status(200).send({ msg: "blog is deleted successfully" })
         } else {
             res.status(404).send({
@@ -124,7 +124,7 @@ const deleteByElement = async function (req, res) {
         if (check.deleted == false){
             let idList = check._id
             console.log(idList)
-            let deletion = await blogModel.findOneAndUpdate(filter, {set : {deleted : true, deletedAt : new Date()}},{new : true , upsert : true})
+            let deletion = await blogModel.findOneAndUpdate(filter, {set : {isDeleted : true, deletedAt : new Date()}},{new : true , upsert : true})
             return res.status(200).send({ status : true , msg : "blog is deleted successfully"})
         }
     }

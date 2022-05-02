@@ -21,7 +21,7 @@ const loginUser = async function (req, res) {
           batch: "uranium-Project",
           organisation: "FUnctionUp-login",
         },
-        "project1-group3"
+        "project1"
       );
       console.log(token)
 

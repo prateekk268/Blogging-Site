@@ -22,7 +22,7 @@ const authentication = (req, res, next) => {
 
       return res.status(401).send({ status: false, msg: "Token must be present" });
     }
-    let decodedToken = jwt.verify(token, "project1-group3");              //verifying token with secret key
+    let decodedToken = jwt.verify(token, "project1");              //verifying token with secret key
 
 
     if (!decodedToken) return res.status(401).send({ status: false, msg: "Token is incorrect" });
@@ -46,7 +46,7 @@ const authorization = async (req, res, next) => {
 
     token = req.headers["x-api-key"];
 
-    let decodedToken = jwt.verify(token, "project1-group3");
+    let decodedToken = jwt.verify(token, "project1");
 
     let loggedInUser = decodedToken.userId;
 
