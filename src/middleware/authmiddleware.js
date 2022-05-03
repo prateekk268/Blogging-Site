@@ -20,12 +20,12 @@ const authentication = (req, res, next) => {
     }
     if (!token) {
 
-      return res.status(401).send({ status: false, msg: "Token must be present" });
+      return res.status(400).send({ status: false, msg: "Token must be present" });
     }
     let decodedToken = jwt.verify(token, "project1");              //verifying token with secret key
 
 
-    if (!decodedToken) return res.status(401).send({ status: false, msg: "Token is incorrect" });
+    if (!decodedToken) return res.status(400).send({ status: false, msg: "Token is incorrect" });
 
     next();                                                               //if token is correct then next function will be called respectively
   }
@@ -89,7 +89,7 @@ const authorization = async (req, res, next) => {
     if (!userLogging) return res.status(400).send({ status: false, msg: "AuthorId is required" });
 
 
-    if (loggedInUser !== userLogging) return res.status(403).send({ status: false, msg: "Error, authorization failed" });
+    if (loggedInUser !== userLogging) return res.status(400).send({ status: false, msg: "Error, authorization failed" });
     next();
   }
 

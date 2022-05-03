@@ -39,9 +39,9 @@ const getBlogs = async function (req, res) {
     try {
         let data = req.query;
         let blogsPresent = await blogModel.find({ isDeleted: false, isPublished: true, ...data })// doubts in spread operator
-        if(!blogsPresent) return res.status(404).send({msg : "No such Data"})
+        if(!blogsPresent) return res.status(404).send({status: false, msg : "No such Data"})
         if(blogsPresent.length == 0){
-            return res.status(404).send({msg : "No blogs are present"})
+            return res.status(404).send({status: false,msg : "No blogs are present"})
         }
         res.status(200).send({ status: true, msg: blogsPresent })
     }
@@ -92,12 +92,12 @@ const deleteblog = async function (req, res) {
 
     try {
         let Blogid = req.params.blogId
-        if (!Blogid) return res.status(404).send({ msg: "Blogid is required" })
+        if (!Blogid) return res.status(404).send({status : false, msg: "Blogid is required" })
 
         let check = await blogModel.findOne({ _id: Blogid })
         if (!check) return res.status(404).send('Blog not exist')
 
-        let checking = check.deleted
+        let checking = check.isDeleted
         if (checking == false) {
             let deleteBlog = await blogModel.findOneAndUpdate({ _id: Blogid }, { isDeleted: true, deletedAt: new Date() }, { new: true })
             return res.status(200).send({ msg: "blog is deleted successfully" })
@@ -120,8 +120,8 @@ const deleteByElement = async function (req, res) {
         if(!data) return res.status(404).send({msg : "data is required in query params"})
         let check = await blogModel.findOne(filter)
         if(!check) return res.status(404).send({status : false , msg : "blog is already deleted"})
-        if(check.deleted == true) return res.status(404).send({status : false, msg : "blog is already deleted"})
-        if (check.deleted == false){
+        if(check.isDeleted == true) return res.status(404).send({status : false, msg : "blog is already deleted"})
+        if (check.isDeleted == false){
             let idList = check._id
             console.log(idList)
             let deletion = await blogModel.findOneAndUpdate(filter, {set : {isDeleted : true, deletedAt : new Date()}},{new : true , upsert : true})
@@ -130,7 +130,7 @@ const deleteByElement = async function (req, res) {
     }
     catch (err) {
         console.log(err)
-        res.status(500).send({ msg: "error", err: err.message })
+        res.status(500).send({status : true, msg: "error", err: err.message })
    
     }
 }
